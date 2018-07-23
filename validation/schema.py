@@ -19,9 +19,6 @@ class Schema:
                 if not hasattr(cls, k):
                     mandatory_fields.append(k)
 
-                # assign empty class variables from annotations
-                setattr(cls, k, None)
-
             cls._mandatory_fields = mandatory_fields
             cls._processed = True
 
@@ -130,4 +127,10 @@ class Schema:
         return self._validation_errors
 
     def __repr__(self):
-        return str(self.__dict__)
+        class_dict = self.__class__.__dict__.copy()
+        class_vars = {}
+        for k, v in class_dict.items():
+            if k[:1] != '_' and not callable(v):
+                class_vars[k] = v
+        class_vars.update(self.__dict__)
+        return str(class_vars)
