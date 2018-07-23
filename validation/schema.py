@@ -1,6 +1,6 @@
 import typing
 
-from validation.validators import construct_error
+from . import construct_error
 
 
 class Schema:
@@ -61,7 +61,8 @@ class Schema:
         """
         if not hasattr(self, attr_name):
             self._validation_errors.append(
-                construct_error(attr_name, "unknown attribute"))
+                construct_error(self.__class__.__name__,
+                                attr_name, "unknown attribute"))
 
     def _validate_type(self, attr_name, attr_val):
         """
@@ -85,6 +86,7 @@ class Schema:
                     if not type(elem) is list_element_type:
                         self._validation_errors.append(
                             construct_error(
+                                self.__class__.__name__,
                                 attr_name, "wrong type in index %s. expected: "
                                            "'%s', provided: '%s'" %
                                            (i, list_element_type, type(elem)))
@@ -98,15 +100,18 @@ class Schema:
 
         elif not type_ == annotated_type:
             self._validation_errors.append(
-                construct_error(attr_name, "wrong type. expected: '%s',"
-                                           "provided: '%s'"
+                construct_error(self.__class__.__name__,
+                                attr_name,
+                                "wrong type. expected: '%s', provided: '%s'"
                                 % (annotated_type, type_)))
 
     def _check_mandatory_fields(self, mandatory_fields):
         for mandatory in mandatory_fields:
             if getattr(self, mandatory) is None:
                 self._validation_errors.append(
-                    construct_error(mandatory, "mandatory field not set"))
+                    construct_error(self.__class__.__name__,
+                                    mandatory,
+                                    "mandatory field not set"))
 
     def __repr__(self):
         return str(self.__dict__)
