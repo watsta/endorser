@@ -24,12 +24,12 @@ class Schema:
 
         return super(Schema, cls).__new__(cls)
 
-    def __init__(self, allow_unknown=False, auto_raise=True, **kwargs):
+    def __init__(self, _allow_unknown=False, _auto_raise=True, **kwargs):
         """
         Tries to initialize the `Schema` object, running provided validations.
 
-        :param allow_unknown: whether to allow unknown properties on the object
-        :param auto_raise: whether to automatically raise for exceptions when
+        :param _allow_unknown: whether to allow unknown properties on the object
+        :param _auto_raise: whether to automatically raise for exceptions when
             validation failed
         """
         mandatory_fields = self._mandatory_fields.copy()
@@ -38,7 +38,7 @@ class Schema:
         self._validation_errors = []
         # set attributes
         for k, v in kwargs.items():
-            if allow_unknown:
+            if _allow_unknown:
                 self._check_unknown_attributes(k)
 
             # check if type matches the annotated type
@@ -59,7 +59,7 @@ class Schema:
         # check if all mandatory fields have been set
         self._check_mandatory_fields(mandatory_fields)
 
-        if auto_raise and self._validation_errors:
+        if _auto_raise and self._validation_errors:
             raise ValidationError(self._validation_errors)
 
     def _check_unknown_attributes(self, attr_name):
