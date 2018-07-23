@@ -69,7 +69,6 @@ class Schema:
 
         :param attr_name: the name of the attribute
         :param attr_val: the value of the attribute
-        :return:
         """
         type_ = type(attr_val)
         annotated_type = self.__class__.__annotations__[attr_name]
@@ -82,13 +81,13 @@ class Schema:
             # check typing.List
             try:
                 list_element_type = annotated_type.__args__[0]
-                for elem in attr_val:
+                for i, elem in enumerate(attr_val):
                     if not type(elem) is list_element_type:
                         self._validation_errors.append(
                             construct_error(
-                                attr_name, "wrong type in list. expected: "
-                                           "'%s', provided: '%s'"
-                                           % (list_element_type, type(elem)))
+                                attr_name, "wrong type in index %s. expected: "
+                                           "'%s', provided: '%s'" %
+                                           (i, list_element_type, type(elem)))
                         )
                         break
             except (IndexError, TypeError):
