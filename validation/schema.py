@@ -45,20 +45,21 @@ class Schema:
                 # check typing.List
                 try:
                     list_element_type = annotated_type.__args__[0]
+                    for elem in v:
+                        if not type(elem) is list_element_type:
+                            self._validation_errors.append(
+                                construct_error(
+                                    k, "wrong type in list. expected: "
+                                       "'%s', provided: '%s'"
+                                       % (list_element_type, type(elem)))
+                            )
+                            break
                 except (IndexError, TypeError):
                     # if we get either of these exceptions it means that the
                     # annotation is a generic List with no type hints for it's
                     # content
-                    break
+                    pass
 
-                for elem in v:
-                    if not type(elem) is list_element_type:
-                        self._validation_errors.append(
-                            construct_error(k, "wrong type in list. expected: "
-                                            "'%s', provided: '%s'"
-                                            % (list_element_type, type(elem)))
-                        )
-                        break
             elif not type_ == annotated_type:
                 self._validation_errors.append(
                     construct_error(k, "wrong type. expected: '%s',"
