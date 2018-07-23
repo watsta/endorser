@@ -26,7 +26,7 @@ class Schema:
 
     def __init__(self, allow_unknown=False, auto_raise=True, **kwargs):
         """
-        Tries to initalize the `Schema` object, running provided validations.
+        Tries to initialize the `Schema` object, running provided validations.
 
         :param allow_unknown: whether to allow unknown properties on the object
         :param auto_raise: whether to automatically raise for exceptions when
