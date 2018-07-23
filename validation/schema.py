@@ -19,6 +19,11 @@ class Schema:
                 if not hasattr(cls, k):
                     mandatory_fields.append(k)
 
+                # assign empty class variables from annotations
+                # necessary to check for unknown attributes later on
+                if not hasattr(cls, k):
+                    setattr(cls, k, None)
+
             cls._mandatory_fields = mandatory_fields
             cls._processed = True
 
@@ -38,7 +43,7 @@ class Schema:
         self._validation_errors = []
         # set attributes
         for k, v in kwargs.items():
-            if _allow_unknown:
+            if not _allow_unknown:
                 self._check_unknown_attributes(k)
 
             # check if type matches the annotated type
@@ -81,7 +86,12 @@ class Schema:
         :param attr_val: the value of the attribute
         """
         type_ = type(attr_val)
-        annotated_type = self.__class__.__annotations__[attr_name]
+        try:
+            annotated_type = self.__class__.__annotations__[attr_name]
+        except KeyError:
+            # KeyError means unknown attribute. Can only occur when
+            # `_allow_unknown is True`
+            return
         if attr_val is None:
             # if the value is None, it's type will be NoneType
             # we check for mandatory value assignment later
