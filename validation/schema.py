@@ -19,7 +19,7 @@ class Schema:
                 if not hasattr(cls, k):
                     mandatory_fields.append(k)
 
-                # reassign variables to private variables
+                # assign empty class variables from annotations
                 setattr(cls, k, None)
 
             cls._mandatory_fields = mandatory_fields
@@ -28,6 +28,13 @@ class Schema:
         return super(Schema, cls).__new__(cls)
 
     def __init__(self, allow_unknown=False, auto_raise=True, **kwargs):
+        """
+        Tries to initalize the `Schema` object, running provided validations.
+
+        :param allow_unknown: whether to allow unknown properties on the object
+        :param auto_raise: whether to automatically raise for exceptions when
+            validation failed
+        """
         mandatory_fields = self._mandatory_fields.copy()
 
         class_items = self.__class__.__dict__
