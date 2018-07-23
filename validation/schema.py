@@ -1,5 +1,6 @@
 import typing
 
+from validation.exception import ValidationError
 from . import construct_error
 
 
@@ -26,14 +27,15 @@ class Schema:
 
         return super(Schema, cls).__new__(cls)
 
-    def __init__(self, **kwargs):
+    def __init__(self, allow_unknown=False, auto_raise=True, **kwargs):
         mandatory_fields = self._mandatory_fields.copy()
 
         class_items = self.__class__.__dict__
         self._validation_errors = []
         # set attributes
         for k, v in kwargs.items():
-            self._check_unknown_attributes(k)
+            if allow_unknown:
+                self._check_unknown_attributes(k)
 
             # check if type matches the annotated type
             self._validate_type(k, v)
@@ -52,6 +54,9 @@ class Schema:
 
         # check if all mandatory fields have been set
         self._check_mandatory_fields(mandatory_fields)
+
+        if auto_raise and self._validation_errors:
+            raise ValidationError(self._validation_errors)
 
     def _check_unknown_attributes(self, attr_name):
         """
@@ -112,6 +117,10 @@ class Schema:
                     construct_error(self.__class__.__name__,
                                     mandatory,
                                     "mandatory field not set"))
+
+    @property
+    def validation_errors(self):
+        return self._validation_errors
 
     def __repr__(self):
         return str(self.__dict__)
