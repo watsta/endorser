@@ -16,6 +16,9 @@ class ParentSchema(Schema):
     typed_list_prop_with_custom_obj: List[CustomSchema]
     prop_with_default_value: str = 'def'
 
+    def validate_str_prop(self, value):
+        return value
+
 
 class ChildSchema(ParentSchema):
     typed_list_prop: List

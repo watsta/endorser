@@ -84,3 +84,20 @@ class TestSchema(unittest.TestCase):
                          'CustomSchema')
         self.assertEqual(schema.nested_validation_errors[1]['field'],
                          invalid_prop)
+
+    def test_mandatory_argument_with_None_provided(self):
+        self.PROPERTIES['str_prop'] = None
+        schema = ParentSchema(**self.PROPERTIES)
+
+        self.assertEqual(len(schema.nested_validation_errors), 1)
+        self.assertEqual(schema.validation_errors[0]['class'], 'ParentSchema')
+        self.assertEqual(schema.validation_errors[0]['field'], 'str_prop')
+
+    def test_mandatory_argument_with_no_arg_provided(self):
+        self.PROPERTIES.pop('str_prop')
+        schema = ParentSchema(**self.PROPERTIES)
+
+        self.assertEqual(len(schema.nested_validation_errors), 1)
+        self.assertEqual(schema.str_prop, None)
+        self.assertEqual(schema.validation_errors[0]['class'], 'ParentSchema')
+        self.assertEqual(schema.validation_errors[0]['field'], 'str_prop')
