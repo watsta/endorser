@@ -20,7 +20,3 @@ class ParentSchema(Schema):
 class ChildSchema(ParentSchema):
     typed_list_prop: List
     new_prop: int
-
-
-if __name__ == '__main__':
-    a = Schema(hi='hi')
