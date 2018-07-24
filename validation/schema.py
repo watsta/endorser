@@ -1,7 +1,7 @@
 import typing
 
 from validation.exception import ValidationError
-from . import construct_error
+from validation import construct_error
 
 
 class Schema:
