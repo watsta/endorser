@@ -46,13 +46,13 @@ class TestSchema(unittest.TestCase):
 
     def test_incorrect_type(self):
         self.PROPERTIES['str_prop'] = 123
+        self.PROPERTIES['_auto_raise'] = True
         with self.assertRaises(ValidationError):
             ParentSchema(**self.PROPERTIES)
 
     def test_auto_raise_off(self):
         invalid_prop = 'str_prop'
         self.PROPERTIES[invalid_prop] = 123
-        self.PROPERTIES['_auto_raise'] = False
         schema = ParentSchema(**self.PROPERTIES)
 
         self.assertEqual(len(schema.validation_errors), 1)
@@ -73,7 +73,6 @@ class TestSchema(unittest.TestCase):
         invalid_nested_prop = 'custom_obj'
         self.PROPERTIES[invalid_nested_prop] = CustomSchema(
             _auto_raise=False, str_prop=456)
-        self.PROPERTIES['_auto_raise'] = False
         schema = ParentSchema(**self.PROPERTIES)
 
         self.assertEqual(len(schema.nested_validation_errors), 2)

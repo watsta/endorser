@@ -29,13 +29,19 @@ class Schema:
 
         return super(Schema, cls).__new__(cls)
 
-    def __init__(self, _allow_unknown=False, _auto_raise=True, **kwargs):
+    def __init__(self, _allow_unknown=False, _auto_raise=False, **kwargs):
         """
         Tries to initialize the `Schema` object, running provided validations.
 
-        :param _allow_unknown: whether to allow unknown properties on the object
+        :param _allow_unknown: whether to allow unknown properties on the
+            object
         :param _auto_raise: whether to automatically raise for exceptions when
-            validation failed
+            validation failed. Keep in mind that this setting will raise a
+            ValidationError exception for the parent's class' exceptions only.
+            This means that if you have nested Schema objects the child's
+            exceptions will not be raised here. Default is False, which means
+            you have to check for `self.nested_validation_errors` property for
+            any validation errors.
         """
         mandatory_fields = self._mandatory_fields.copy()
         self._nested_validation_errors = []
