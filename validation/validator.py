@@ -14,9 +14,9 @@ def not_none(validation_field):
         prop_name = validation_field.__name__.split('_')[1]
         if value is None:
             self._validation_errors.append(
-                construct_error(self.__class__.__name__,
-                                prop_name,
-                                'None value'))
+                construct_error(prop_name,
+                                'None value',
+                                self.__class__.__name__))
         return validation_field(self, value)
 
     return validator
@@ -32,9 +32,9 @@ def not_empty(validation_field):
         prop_name = validation_field.__name__.split('_')[1]
         if not value and value is not 0:
             self._validation_errors.append(
-                construct_error(self.__class__.__name__,
-                                prop_name,
-                                'empty value'))
+                construct_error(prop_name,
+                                'empty value',
+                                self.__class__.__name__))
         return validation_field(self, value)
     return validator
 
@@ -47,9 +47,9 @@ def min_size(size: int):
             prop_name = validator_function.__name__.split('_')[1]
             if len(value) < size:
                 self._validation_errors.append(
-                    construct_error(self.__class__.__name__,
-                                    prop_name,
-                                    'minimum size %d not reached' % size))
+                    construct_error(prop_name,
+                                    'minimum size %d not reached' % size,
+                                    self.__class__.__name__))
             return validator_function(self, value)
         return validator
     return decorator
@@ -63,9 +63,9 @@ def max_size(size: int):
             prop_name = validator_function.__name__.split('_')[1]
             if len(value) > size:
                 self._validation_errors.append(
-                    construct_error(self.__class__.__name__,
-                                    prop_name,
-                                    'maximum size %d exceeded' % size))
+                    construct_error(prop_name,
+                                    'maximum size %d exceeded' % size,
+                                    self.__class__.__name__))
             return validator_function(self, value)
         return validator
     return decorator
@@ -83,8 +83,8 @@ def valid_uuid(validation_field):
             uuid.UUID(value)
         except (ValueError, AttributeError):
             self._validation_errors.append(
-                construct_error(self.__class__.__name__,
-                                prop_name,
-                                '{} is not a valid uuid'.format(value)))
+                construct_error(prop_name,
+                                '{} is not a valid uuid'.format(value),
+                                self.__class__.__name__))
         return validation_field(self, value)
     return validator
