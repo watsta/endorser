@@ -101,4 +101,3 @@ class ValidatorTest(unittest.TestCase):
         validator.valid_uuid(self.validation_field)(
             self, object())
         self.assertEqual(5, len(self._validation_errors))
-        print(self._validation_errors)
