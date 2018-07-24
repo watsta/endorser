@@ -81,10 +81,10 @@ def valid_uuid(validation_field):
         prop_name = validation_field.__name__.split('_')[1]
         try:
             uuid.UUID(value)
-        except ValueError:
+        except (ValueError, AttributeError):
             self._validation_errors.append(
                 construct_error(self.__class__.__name__,
                                 prop_name,
-                                '%s is not a valid uuid' % value))
+                                '{} is not a valid uuid'.format(value)))
         return validation_field(self, value)
     return validator
