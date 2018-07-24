@@ -1,7 +1,7 @@
 import functools
 import uuid
 
-from . import construct_error
+from validation import construct_error
 
 
 def not_none(validation_field):
@@ -30,7 +30,7 @@ def not_empty(validation_field):
     @functools.wraps(validation_field)
     def validator(self, value):
         prop_name = validation_field.__name__.split('_')[1]
-        if not value:
+        if not value and value is not 0:
             self._validation_errors.append(
                 construct_error(self.__class__.__name__,
                                 prop_name,
