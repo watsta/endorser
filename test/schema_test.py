@@ -1,6 +1,6 @@
 import unittest
 
-from test import CustomSchema, ParentSchema, ChildSchema
+from test import CustomSchema, ParentSchema
 from validation.exception import ValidationError
 
 
@@ -66,3 +66,22 @@ class TestSchema(unittest.TestCase):
         self.PROPERTIES['_allow_unknown'] = True
         schema = ParentSchema(**self.PROPERTIES)
         self.assertEqual(schema.unknown, unknown_val)
+
+    def test_nested_validation_errors(self):
+        invalid_prop = 'str_prop'
+        self.PROPERTIES[invalid_prop] = 123
+        invalid_nested_prop = 'custom_obj'
+        self.PROPERTIES[invalid_nested_prop] = CustomSchema(
+            _auto_raise=False, str_prop=456)
+        self.PROPERTIES['_auto_raise'] = False
+        schema = ParentSchema(**self.PROPERTIES)
+
+        self.assertEqual(len(schema.nested_validation_errors), 2)
+        self.assertEqual(schema.nested_validation_errors[0]['class'],
+                         'ParentSchema')
+        self.assertEqual(schema.nested_validation_errors[0]['field'],
+                         invalid_prop)
+        self.assertEqual(schema.nested_validation_errors[1]['class'],
+                         'CustomSchema')
+        self.assertEqual(schema.nested_validation_errors[1]['field'],
+                         invalid_prop)

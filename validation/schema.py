@@ -38,6 +38,7 @@ class Schema:
             validation failed
         """
         mandatory_fields = self._mandatory_fields.copy()
+        self._nested_validation_errors = []
 
         class_items = self.__class__.__dict__
         self._validation_errors = []
@@ -134,7 +135,31 @@ class Schema:
 
     @property
     def validation_errors(self):
+        """
+        :return: the validation errors on this object
+        """
         return self._validation_errors
+
+    @property
+    def nested_validation_errors(self):
+        """
+        Traverses every object in this instance (include self) and returns all
+        validation errors.
+
+        :return: validation errors for every object in this object including
+            self
+        """
+        if self._nested_validation_errors:
+            return self._nested_validation_errors
+
+        errors = []
+        if self._validation_errors:
+            errors = self._validation_errors
+        for prop, val in vars(self).items():
+            if issubclass(type(val), Schema):
+                errors = errors + val.nested_validation_errors
+        self._nested_validation_errors = errors
+        return self._nested_validation_errors
 
     def __repr__(self):
         class_dict = self.__class__.__dict__.copy()
