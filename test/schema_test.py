@@ -1,7 +1,6 @@
 import unittest
 
 from test import CustomSchema, ParentSchema
-from validation.exception import ValidationError
 
 
 class TestSchema(unittest.TestCase):
@@ -45,19 +44,16 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(schema.prop_with_default_value, other_val)
 
     def test_incorrect_type(self):
-        self.PROPERTIES['str_prop'] = 123
-        self.PROPERTIES['_auto_raise'] = True
-        with self.assertRaises(ValidationError):
-            ParentSchema(**self.PROPERTIES)
-
-    def test_auto_raise_off(self):
         invalid_prop = 'str_prop'
         self.PROPERTIES[invalid_prop] = 123
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(len(schema.validation_errors), 1)
-        self.assertEqual(schema.validation_errors[0]['class'], 'ParentSchema')
-        self.assertEqual(schema.validation_errors[0]['field'], invalid_prop)
+        self.assertEqual(len(schema.schema_errors), 1)
+        self.assertEqual(schema.schema_errors[0]['class'],
+                         'ParentSchema')
+        self.assertEqual(schema.schema_errors[0]['field'],
+                         invalid_prop)
+
 
     def test_allow_unknown(self):
         unknown = 'unknown'
@@ -71,33 +67,32 @@ class TestSchema(unittest.TestCase):
         invalid_prop = 'str_prop'
         self.PROPERTIES[invalid_prop] = 123
         invalid_nested_prop = 'custom_obj'
-        self.PROPERTIES[invalid_nested_prop] = CustomSchema(
-            _auto_raise=False, str_prop=456)
+        self.PROPERTIES[invalid_nested_prop] = CustomSchema(str_prop=456)
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(len(schema.nested_validation_errors), 2)
-        self.assertEqual(schema.nested_validation_errors[0]['class'],
+        self.assertEqual(len(schema.schema_errors), 2)
+        self.assertEqual(schema.schema_errors[0]['class'],
                          'ParentSchema')
-        self.assertEqual(schema.nested_validation_errors[0]['field'],
+        self.assertEqual(schema.schema_errors[0]['field'],
                          invalid_prop)
-        self.assertEqual(schema.nested_validation_errors[1]['class'],
+        self.assertEqual(schema.schema_errors[1]['class'],
                          'CustomSchema')
-        self.assertEqual(schema.nested_validation_errors[1]['field'],
+        self.assertEqual(schema.schema_errors[1]['field'],
                          invalid_prop)
 
     def test_mandatory_argument_with_None_provided(self):
         self.PROPERTIES['str_prop'] = None
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(len(schema.nested_validation_errors), 1)
-        self.assertEqual(schema.validation_errors[0]['class'], 'ParentSchema')
-        self.assertEqual(schema.validation_errors[0]['field'], 'str_prop')
+        self.assertEqual(len(schema.schema_errors), 1)
+        self.assertEqual(schema.instance_errors[0]['class'], 'ParentSchema')
+        self.assertEqual(schema.instance_errors[0]['field'], 'str_prop')
 
     def test_mandatory_argument_with_no_arg_provided(self):
         self.PROPERTIES.pop('str_prop')
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(len(schema.nested_validation_errors), 1)
+        self.assertEqual(len(schema.schema_errors), 1)
         self.assertEqual(schema.str_prop, None)
-        self.assertEqual(schema.validation_errors[0]['class'], 'ParentSchema')
-        self.assertEqual(schema.validation_errors[0]['field'], 'str_prop')
+        self.assertEqual(schema.instance_errors[0]['class'], 'ParentSchema')
+        self.assertEqual(schema.instance_errors[0]['field'], 'str_prop')

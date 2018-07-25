@@ -1,6 +1,5 @@
 import typing
 
-from validation.exception import ValidationError
 from validation import construct_error
 
 
@@ -29,25 +28,18 @@ class Schema:
 
         return super(Schema, cls).__new__(cls)
 
-    def __init__(self, _allow_unknown=False, _auto_raise=False, **kwargs):
+    def __init__(self, _allow_unknown=False, **kwargs):
         """
-        Tries to initialize the `Schema` object, running provided validations.
+        Initializes the `Schema` object, running provided validations.
 
         :param _allow_unknown: whether to allow unknown properties on the
             object
-        :param _auto_raise: whether to automatically raise for exceptions when
-            validation failed. Keep in mind that this setting will raise a
-            ValidationError exception for the parent's class' exceptions only.
-            This means that if you have nested Schema objects the child's
-            exceptions will not be raised here. Default is False, which means
-            you have to check for `self.nested_validation_errors` property for
-            any validation errors.
         """
         mandatory_fields = self._mandatory_fields.copy()
         self._nested_validation_errors = []
+        self._validation_errors = []
 
         class_items = self.__class__.__dict__
-        self._validation_errors = []
         # set attributes
         for k, v in kwargs.items():
             if not _allow_unknown:
@@ -70,9 +62,6 @@ class Schema:
 
         # check if all mandatory fields have been set
         self._check_mandatory_fields(mandatory_fields)
-
-        if _auto_raise and self._validation_errors:
-            raise ValidationError(self._validation_errors)
 
     def _check_unknown_attributes(self, attr_name):
         """
@@ -140,14 +129,14 @@ class Schema:
                                     self.__class__.__name__))
 
     @property
-    def validation_errors(self):
+    def instance_errors(self):
         """
         :return: the validation errors on this object
         """
         return self._validation_errors
 
     @property
-    def nested_validation_errors(self):
+    def schema_errors(self):
         """
         Traverses every object in this instance (include self) and returns all
         validation errors.
@@ -158,12 +147,10 @@ class Schema:
         if self._nested_validation_errors:
             return self._nested_validation_errors
 
-        errors = []
-        if self._validation_errors:
-            errors = self._validation_errors
+        errors = self._validation_errors
         for prop, val in vars(self).items():
             if issubclass(type(val), Schema):
-                errors = errors + val.nested_validation_errors
+                errors = errors + val.schema_errors
         self._nested_validation_errors = errors
         return self._nested_validation_errors
 
