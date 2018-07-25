@@ -54,7 +54,6 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(schema.schema_errors[0]['field'],
                          invalid_prop)
 
-
     def test_allow_unknown(self):
         unknown = 'unknown'
         unknown_val = 123
