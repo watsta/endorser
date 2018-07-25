@@ -36,8 +36,8 @@ class Schema:
             object
         """
         mandatory_fields = self._mandatory_fields.copy()
-        self._nested_validation_errors = []
-        self._validation_errors = []
+        self._instance_errors = []
+        self._doc_errors = []
 
         class_items = self.__class__.__dict__
         # set attributes
@@ -70,7 +70,7 @@ class Schema:
         :param attr_name: the attribute's name
         """
         if not hasattr(self, attr_name):
-            self._validation_errors.append(
+            self._instance_errors.append(
                 construct_error(attr_name, "unknown attribute",
                                 self.__class__.__name__))
 
@@ -99,7 +99,7 @@ class Schema:
                 list_element_type = annotated_type.__args__[0]
                 for i, elem in enumerate(attr_val):
                     if not type(elem) is list_element_type:
-                        self._validation_errors.append(
+                        self._instance_errors.append(
                             construct_error(
                                 attr_name, "wrong type in index %s. expected: "
                                            "'%s', provided: '%s'" %
@@ -114,7 +114,7 @@ class Schema:
                 pass
 
         elif not type_ == annotated_type:
-            self._validation_errors.append(
+            self._instance_errors.append(
                 construct_error(attr_name,
                                 "wrong type. expected: '%s', provided: '%s'"
                                 % (annotated_type, type_),
@@ -123,7 +123,7 @@ class Schema:
     def _check_mandatory_fields(self, mandatory_fields):
         for mandatory in mandatory_fields:
             if getattr(self, mandatory) is None:
-                self._validation_errors.append(
+                self._instance_errors.append(
                     construct_error(mandatory,
                                     "mandatory field not set",
                                     self.__class__.__name__))
@@ -133,10 +133,10 @@ class Schema:
         """
         :return: the validation errors on this object
         """
-        return self._validation_errors
+        return self._instance_errors
 
     @property
-    def schema_errors(self):
+    def doc_errors(self):
         """
         Traverses every object in this instance (include self) and returns all
         validation errors.
@@ -144,15 +144,15 @@ class Schema:
         :return: validation errors for every object in this object including
             self
         """
-        if self._nested_validation_errors:
-            return self._nested_validation_errors
+        if self._doc_errors:
+            return self._doc_errors
 
-        errors = self._validation_errors
+        errors = self._instance_errors
         for prop, val in vars(self).items():
             if issubclass(type(val), Schema):
-                errors = errors + val.schema_errors
-        self._nested_validation_errors = errors
-        return self._nested_validation_errors
+                errors = errors + val.doc_errors
+        self._doc_errors = errors
+        return self._doc_errors
 
     def __repr__(self):
         class_dict = self.__class__.__dict__.copy()

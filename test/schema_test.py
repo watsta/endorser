@@ -48,10 +48,10 @@ class TestSchema(unittest.TestCase):
         self.PROPERTIES[invalid_prop] = 123
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(len(schema.schema_errors), 1)
-        self.assertEqual(schema.schema_errors[0]['class'],
+        self.assertEqual(len(schema.doc_errors), 1)
+        self.assertEqual(schema.doc_errors[0]['class'],
                          'ParentSchema')
-        self.assertEqual(schema.schema_errors[0]['field'],
+        self.assertEqual(schema.doc_errors[0]['field'],
                          invalid_prop)
 
     def test_allow_unknown(self):
@@ -69,21 +69,21 @@ class TestSchema(unittest.TestCase):
         self.PROPERTIES[invalid_nested_prop] = CustomSchema(str_prop=456)
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(len(schema.schema_errors), 2)
-        self.assertEqual(schema.schema_errors[0]['class'],
+        self.assertEqual(len(schema.doc_errors), 2)
+        self.assertEqual(schema.doc_errors[0]['class'],
                          'ParentSchema')
-        self.assertEqual(schema.schema_errors[0]['field'],
+        self.assertEqual(schema.doc_errors[0]['field'],
                          invalid_prop)
-        self.assertEqual(schema.schema_errors[1]['class'],
+        self.assertEqual(schema.doc_errors[1]['class'],
                          'CustomSchema')
-        self.assertEqual(schema.schema_errors[1]['field'],
+        self.assertEqual(schema.doc_errors[1]['field'],
                          invalid_prop)
 
     def test_mandatory_argument_with_None_provided(self):
         self.PROPERTIES['str_prop'] = None
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(len(schema.schema_errors), 1)
+        self.assertEqual(len(schema.doc_errors), 1)
         self.assertEqual(schema.instance_errors[0]['class'], 'ParentSchema')
         self.assertEqual(schema.instance_errors[0]['field'], 'str_prop')
 
@@ -91,7 +91,7 @@ class TestSchema(unittest.TestCase):
         self.PROPERTIES.pop('str_prop')
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(len(schema.schema_errors), 1)
+        self.assertEqual(len(schema.doc_errors), 1)
         self.assertEqual(schema.str_prop, None)
         self.assertEqual(schema.instance_errors[0]['class'], 'ParentSchema')
         self.assertEqual(schema.instance_errors[0]['field'], 'str_prop')
