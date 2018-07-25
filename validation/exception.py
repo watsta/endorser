@@ -1,3 +1,5 @@
-class ValidationError(Exception):
-    """Exception to raise when validation failed. It provides a list of
-    exceptions"""
+class ConversionError(Exception):
+    """Exception to raise when conversion fails."""
+
+    def __init__(self, errors: list):
+        self.errors = errors
