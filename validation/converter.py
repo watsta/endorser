@@ -22,6 +22,9 @@ class DocumentConverter:
         :param allow_unknown: whether to allow unknown values to be present
         :return: a populated class with type T
         """
+        if not document:
+            raise ValueError('empty document provided')
+
         if type(document) is dict:
             data = _transform_dict(document, doc_type, allow_unknown)
             if data.doc_errors:
