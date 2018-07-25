@@ -1,4 +1,4 @@
-from typing import get_type_hints, TypeVar, Type
+from typing import get_type_hints, TypeVar, Type, List
 
 from validation.exception import ConversionError
 from validation.schema import Schema
@@ -23,14 +23,14 @@ class DocumentConverter:
         :return: a populated class with type T
         """
         if type(document) is dict:
-            data = _transform_dict_root(document, doc_type, allow_unknown)
+            data = _transform_dict(document, doc_type, allow_unknown)
             if data.doc_errors:
                 raise ConversionError(
                     [{"field": error['field'], "error": error['error']} for
                      error in data.doc_errors]
                 )
         elif type(document) is list:
-            data = _transform_list_root(document, doc_type, allow_unknown)
+            data = _transform_list(document, doc_type, allow_unknown)
             errors = []
             for obj in data:
                 if obj.doc_errors:
@@ -45,8 +45,8 @@ class DocumentConverter:
         return data
 
 
-def _transform_dict_root(document: dict, doc_type: Type[T],
-                         allow_unknown: bool) -> T:
+def _transform_dict(document: dict, doc_type: Type[T],
+                    allow_unknown: bool) -> T:
     """
     Transforms the document from dict to type T.
 
@@ -60,10 +60,10 @@ def _transform_dict_root(document: dict, doc_type: Type[T],
             raise ValueError('%s is not type hinted' % k)
 
         if type(v) is dict:
-            document[k] = _transform_dict_root(v, hints[k], allow_unknown)
+            document[k] = _transform_dict(v, hints[k], allow_unknown)
         elif type(v) is list:
             try:
-                document[k] = _transform_list_root(
+                document[k] = _transform_list(
                     v, hints[k], allow_unknown)
             except (IndexError, TypeError, AttributeError):
                 # if we get either of these exceptions it means that the
@@ -73,8 +73,8 @@ def _transform_dict_root(document: dict, doc_type: Type[T],
     return doc_type(_allow_unknown=allow_unknown, **document)
 
 
-def _transform_list_root(document: list, doc_type: Type[T],
-                         allow_unknown: bool) -> T:
+def _transform_list(document: list, doc_type: Type[T],
+                    allow_unknown: bool) -> List[T]:
     """
     Transforms the document from list to type T.
 
@@ -87,5 +87,5 @@ def _transform_list_root(document: list, doc_type: Type[T],
     except TypeError:
         raise TypeError('generic List type cannot be used as document type, '
                         'provide a ')
-    return [_transform_dict_root(obj, type_, allow_unknown) for obj in
+    return [_transform_dict(obj, type_, allow_unknown) for obj in
             document]

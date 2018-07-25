@@ -1,9 +1,8 @@
 import unittest
 from typing import List
 
+from test import ParentSchema
 from validation.converter import DocumentConverter
-
-from test import ParentSchema, CustomSchema
 from validation.exception import ConversionError
 
 
