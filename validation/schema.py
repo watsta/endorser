@@ -45,9 +45,6 @@ class Schema:
             if not _allow_unknown:
                 self._check_unknown_attributes(k)
 
-            # check if type matches the annotated type
-            self._validate_type(k, v)
-
             # remove provided attributes from the mandatory list
             # this is necessary to accept provided `None` values as well
             if k in mandatory_fields and v is not None:
@@ -57,6 +54,9 @@ class Schema:
             validation_field = 'validate_%s' % k
             if validation_field in class_items:
                 v = class_items[validation_field](self, v)
+
+            # check if type matches the annotated type
+            self._validate_type(k, v)
 
             setattr(self, k, v)
 
