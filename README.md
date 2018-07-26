@@ -44,6 +44,18 @@ assert user.address.zip_code is "6757"
 
 ```
 
+## Install
+Endorser is hosted on PyPI, you can install it via pip:
+```
+pip install endorser
+```
+To run the tests:
+```
+python setup.py install
+python setup.py test
+```
+Endorser doesn't have any dependencies outside of pytest and pytest-runner.
+
 ## Features
 
 ### validation.schema.Schema
