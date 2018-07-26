@@ -1,4 +1,4 @@
-from typing import get_type_hints, TypeVar, Type, List
+from typing import get_type_hints, TypeVar, Type, Union, List
 
 from validation.exception import ConversionError
 from validation.schema import Schema
@@ -12,10 +12,10 @@ class DocumentConverter:
     Converter class to convert documents to typed objects.
     """
 
-    def convert(self, document: S, doc_type: Type[T],
-                allow_unknown=False) -> T:
+    def convert(self, document: S, doc_type: Union[Type[T], Type[List[T]]],
+                allow_unknown=False) -> Union[T, List[T]]:
         """
-        Converts an object from S to T.
+        Converts an S from type list/dict to Type[T]/Type[List[T]].
 
         :param document: the object to convert
         :param doc_type: the class to convert to
