@@ -17,7 +17,7 @@ setup(
     ],
     author='Krisztian Toth',
     author_email='tkrisztiana@gmail.com',
-    url='',
+    url='https://github.com/watsta/endorser',
     keywords='object validator validate converter convert',
     packages=find_packages(),
     include_package_data=True,
