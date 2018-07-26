@@ -66,7 +66,7 @@ def _transform_dict(document: dict, doc_type: Type[T],
             except (IndexError, TypeError, AttributeError):
                 # if we get either of these exceptions it means that the
                 # annotation is a generic list with no type hints for it's
-                # content
+                # content, so we'll leave the content as it is.
                 pass
     return doc_type(_allow_unknown=allow_unknown, **document)
 
@@ -84,6 +84,6 @@ def _transform_list(document: list, doc_type: Type[T],
         type_ = doc_type.__args__[0]
     except TypeError:
         raise TypeError('generic List type cannot be used as document type, '
-                        'provide a ')
+                        'provide a type for the content of the list as well')
     return [_transform_dict(obj, type_, allow_unknown) for obj in
             document]
