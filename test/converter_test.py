@@ -1,7 +1,7 @@
 import unittest
 from typing import List
 
-from test import ParentSchema
+from test import ParentSchema, InvalidSchema
 from validation.converter import DocumentConverter
 from validation.exception import ConversionError
 
@@ -9,6 +9,9 @@ from validation.exception import ConversionError
 class ConverterTest(unittest.TestCase):
     A_STRING = "some string"
     A_STRING_2 = "another string"
+    A_STRING_3 = "some string 2"
+    A_STRING_4 = "another string 2"
+    NOT_DEF_VAL = "not def value"
 
     def setUp(self):
         self.converter = DocumentConverter()
@@ -28,11 +31,11 @@ class ConverterTest(unittest.TestCase):
         }
 
         self.ANOTHER_DOCUMENT = {
-            "str_prop": "some string 2",
+            "str_prop": self.A_STRING_3,
             "int_prop": 321,
             "list_prop": [1, "value", 2],
             "custom_obj": {
-                "str_prop": "another string 2"
+                "str_prop": self.A_STRING_4
             },
             "typed_list_prop": ["string", "list"],
             "typed_list_prop_with_custom_obj": [{
@@ -40,7 +43,7 @@ class ConverterTest(unittest.TestCase):
             }, {
                 "str_prop": "values in a list 4"
             }],
-            "prop_with_default_value": "not def value"
+            "prop_with_default_value": self.NOT_DEF_VAL
         }
 
     def test_converter(self):
@@ -51,7 +54,15 @@ class ConverterTest(unittest.TestCase):
     def test_converter_with_list(self):
         data = [self.VALID_DOCUMENT, self.ANOTHER_DOCUMENT]
         result = self.converter.convert(data, List[ParentSchema])
-        print(result)
+
+        self.assertEqual(2, len(result))
+        self.assertEqual(result[0].str_prop, self.A_STRING)
+        self.assertEqual(result[0].custom_obj.str_prop, self.A_STRING_2)
+        self.assertEqual(result[0].prop_with_default_value,
+                         ParentSchema.prop_with_default_value)
+        self.assertEqual(result[1].str_prop, self.A_STRING_3)
+        self.assertEqual(result[1].custom_obj.str_prop, self.A_STRING_4)
+        self.assertEqual(result[1].prop_with_default_value, self.NOT_DEF_VAL)
 
     def test_converter_with_invalid_prop(self):
         prop = "int_prop"
@@ -61,3 +72,8 @@ class ConverterTest(unittest.TestCase):
             self.converter.convert(self.VALID_DOCUMENT, ParentSchema)
         self.assertEqual(1, len(e.exception.errors))
         self.assertEqual(e.exception.errors[0]['field'], prop)
+
+    def test_schema_with_not_type_hinted_prop(self):
+        with self.assertRaises(ValueError):
+            self.converter.convert({'str_prop': 'str', 'invalid_prop': 123},
+                                   InvalidSchema)

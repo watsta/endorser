@@ -5,6 +5,7 @@ from test import CustomSchema, ParentSchema
 
 class TestSchema(unittest.TestCase):
     list_prop = [5, 6, 7]
+    dict_prop = {"some": "dict"}
     int_prop = 123
     str_prop_1 = 'string_1'
     str_prop_2 = 'string_2'
@@ -18,6 +19,7 @@ class TestSchema(unittest.TestCase):
             'str_prop': self.str_prop_1,
             'int_prop': self.int_prop,
             'list_prop': self.list_prop,
+            'dict_prop': self.dict_prop,
             'custom_obj': self.test_schema_1,
             'typed_list_prop': [self.str_prop_3, self.str_prop_4],
             'typed_list_prop_with_custom_obj': [self.test_schema_2]
@@ -29,6 +31,7 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(schema.str_prop, self.str_prop_1)
         self.assertEqual(schema.int_prop, self.int_prop)
         self.assertEqual(schema.list_prop, self.list_prop)
+        self.assertEqual(schema.dict_prop, self.dict_prop)
         self.assertEqual(schema.custom_obj, self.test_schema_1)
         self.assertCountEqual(schema.typed_list_prop, [self.str_prop_3,
                                                        self.str_prop_4])
