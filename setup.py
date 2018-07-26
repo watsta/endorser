@@ -1,14 +1,15 @@
-import os
-
 from setuptools import setup, find_packages
 
-here = os.path.abspath(os.path.dirname(__file__))
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 
 setup(
-    name='object_validator',
-    version='0.12',
+    name='endorser',
+    version='0.13',
     description='Annotation based python object validator',
-    long_description='Annotation based python object validator',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     classifiers=[
         'Programming Language :: Python',
     ],
