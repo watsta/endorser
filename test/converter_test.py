@@ -2,8 +2,8 @@ import unittest
 from typing import List
 
 from test import ParentSchema, InvalidSchema
-from validation.converter import DocumentConverter
-from validation.exception import ConversionError
+from endorser.converter import DocumentConverter
+from endorser.exception import ConversionError
 
 
 class ConverterTest(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from validation import validator
+from endorser import validator
 
 
 class ValidatorTest(unittest.TestCase):

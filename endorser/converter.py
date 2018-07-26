@@ -1,7 +1,7 @@
 from typing import get_type_hints, TypeVar, Type, Union, List
 
-from validation.exception import ConversionError
-from validation.schema import Schema
+from endorser.exception import ConversionError
+from endorser.schema import Schema
 
 S = TypeVar('S', dict, list)
 T = TypeVar('T', bound=Schema)

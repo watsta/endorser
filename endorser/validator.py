@@ -1,7 +1,7 @@
 import functools
 import uuid
 
-from validation import construct_error
+from endorser import construct_error
 
 
 def not_none(validation_field):

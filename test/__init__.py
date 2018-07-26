@@ -1,6 +1,6 @@
 from typing import List
 
-from validation.schema import Schema
+from endorser.schema import Schema
 
 
 class CustomSchema(Schema):

@@ -1,8 +1,8 @@
 import unittest
 
-from validation.converter import DocumentConverter
-from validation.schema import Schema
-from validation.validator import min_size
+from endorser.converter import DocumentConverter
+from endorser.schema import Schema
+from endorser.validator import min_size
 
 
 class Address(Schema):

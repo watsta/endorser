@@ -1,4 +1,4 @@
-# DocumentConverter and -Validator
+# Endorser
 
 A lightweight data validation and converter package for Python 3.6+.
 It's always better to work with a structured set of data instead of just a simple dictionary. This package provides an easy way to do the conversion seamlessly while it provides a set of tools to validate the data.

@@ -1,10 +1,10 @@
 import unittest
 from typing import List
 
-from validation import construct_error
-from validation.converter import DocumentConverter
-from validation.schema import Schema
-from validation.validator import min_size, not_empty, max_size
+from endorser import construct_error
+from endorser.converter import DocumentConverter
+from endorser.schema import Schema
+from endorser.validator import min_size, not_empty, max_size
 
 
 class Hobby(Schema):

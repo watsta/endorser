@@ -1,6 +1,6 @@
 import typing
 
-from validation import construct_error
+from endorser import construct_error
 
 
 class Schema:
