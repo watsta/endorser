@@ -18,8 +18,3 @@ class ParentSchema(Schema):
 
     def validate_str_prop(self, value):
         return value
-
-
-class ChildSchema(ParentSchema):
-    typed_list_prop: List
-    new_prop: int
