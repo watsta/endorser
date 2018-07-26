@@ -2,4 +2,4 @@
 build/*
 dist/*
 .pytest_cache/*
-object_validator.egg-info/*
+*.egg-info/*
