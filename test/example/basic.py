@@ -1,3 +1,5 @@
+import unittest
+
 from validation.converter import DocumentConverter
 from validation.schema import Schema
 from validation.validator import min_size
@@ -31,9 +33,14 @@ data = {
     }
 }
 
-if __name__ == '__main__':
-    converter = DocumentConverter()
-    user = converter.convert(data, User)
-    assert user.email is "example@email.com"
-    assert type(user.address) is Address
-    assert user.address.zip_code is "6757"
+
+class BasicExampleTest(unittest.TestCase):
+
+    def setUp(self):
+        self.converter = DocumentConverter()
+
+    def test_basic_example(self):
+        user = self.converter.convert(data, User)
+        assert user.email is "example@email.com"
+        assert type(user.address) is Address
+        assert user.address.zip_code is "6757"
