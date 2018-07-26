@@ -1,10 +1,16 @@
 from typing import get_type_hints, TypeVar, Type, Union, List
 
-from endorser.exception import ConversionError
 from endorser.schema import Schema
 
 S = TypeVar('S', dict, list)
 T = TypeVar('T', bound=Schema)
+
+
+class ConversionError(Exception):
+    """Exception to raise when conversion fails."""
+
+    def __init__(self, errors: list):
+        self.errors = errors
 
 
 class DocumentConverter:

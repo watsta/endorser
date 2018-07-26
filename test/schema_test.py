@@ -1,6 +1,6 @@
 import unittest
 
-from test import CustomSchema, ParentSchema
+from test.data import CustomSchema, ParentSchema
 
 
 class TestSchema(unittest.TestCase):

@@ -1,6 +1,6 @@
 import typing
 
-from endorser import construct_error
+from endorser.util import construct_error
 
 
 class Schema:

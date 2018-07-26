@@ -1,7 +1,7 @@
 import unittest
 
-from endorser.converter import DocumentConverter
-from endorser.schema import Schema
+from endorser import DocumentConverter
+from endorser import Schema
 from endorser.validator import min_size
 
 

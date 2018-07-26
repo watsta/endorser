@@ -1,9 +1,9 @@
 import unittest
 from typing import List
 
-from endorser import construct_error
-from endorser.converter import DocumentConverter
-from endorser.schema import Schema
+from endorser import DocumentConverter
+from endorser import Schema
+from endorser.util import construct_error
 from endorser.validator import min_size, not_empty, max_size
 
 
