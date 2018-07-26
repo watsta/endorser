@@ -41,6 +41,6 @@ class BasicExampleTest(unittest.TestCase):
 
     def test_basic_example(self):
         user = self.converter.convert(data, User)
-        assert user.email is "example@email.com"
+        assert user.email == "example@email.com"
         assert type(user.address) is Address
-        assert user.address.zip_code is "6757"
+        assert user.address.zip_code == "6757"

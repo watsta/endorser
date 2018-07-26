@@ -13,7 +13,7 @@ def not_none(validation_field):
     def validator(self, value):
         prop_name = validation_field.__name__.split('_')[1]
         if value is None:
-            self._validation_errors.append(
+            self.instance_errors.append(
                 construct_error(prop_name,
                                 'None value',
                                 self.__class__.__name__))
@@ -31,7 +31,7 @@ def not_empty(validation_field):
     def validator(self, value):
         prop_name = validation_field.__name__.split('_')[1]
         if not value and value is not 0:
-            self._validation_errors.append(
+            self.instance_errors.append(
                 construct_error(prop_name,
                                 'empty value',
                                 self.__class__.__name__))
@@ -46,7 +46,7 @@ def min_size(size: int):
         def validator(self, value):
             prop_name = validator_function.__name__.split('_')[1]
             if not value or len(value) < size:
-                self._validation_errors.append(
+                self.instance_errors.append(
                     construct_error(prop_name,
                                     'minimum size %d not reached' % size,
                                     self.__class__.__name__))
@@ -62,7 +62,7 @@ def max_size(size: int):
         def validator(self, value):
             prop_name = validator_function.__name__.split('_')[1]
             if not value or len(value) > size:
-                self._validation_errors.append(
+                self.instance_errors.append(
                     construct_error(prop_name,
                                     'maximum size %d exceeded' % size,
                                     self.__class__.__name__))
@@ -82,7 +82,7 @@ def valid_uuid(validation_field):
         try:
             uuid.UUID(value)
         except (ValueError, AttributeError, TypeError):
-            self._validation_errors.append(
+            self.instance_errors.append(
                 construct_error(prop_name,
                                 '{} is not a valid uuid'.format(value),
                                 self.__class__.__name__))
