@@ -5,9 +5,9 @@ It's always better to work with a structured set of data instead of just a simpl
 The main purpose of this package is to create structured data from unstructured types while validating it.
 
 ```Python
-from validation.converter import DocumentConverter
-from validation.schema import Schema
-from validation.validator import min_size
+from endorser import DocumentConverter
+from endorser import Schema
+from endorser import min_size
 
 class Address(Schema):
     zip_code: str
@@ -58,7 +58,7 @@ Endorser doesn't have any dependencies outside of pytest and pytest-runner.
 
 ## Features
 
-### validation.schema.Schema
+### endorser.Schema
 Base class for documents. 
 * Must not be instantiated directly
 * Every attribute must be type hinted
@@ -82,7 +82,7 @@ user = User(email="some@email.com")  # valid, as username can be omitted
 user = User(email=None)  # valid, as email can have the value None
 
     ...
-    from validation.validator import not_none
+    from endorser.validator import not_none
     
     @not_none
     def valid_email(self, email):
@@ -94,7 +94,7 @@ user = User(email=None)  # not valid, as it's both mandatory and cannot be None
 ### Validation
 You can validate `Schema` objects with following this convention:
 ```Python
-from validation.validator import min_size
+from endorser import min_size
 
 class SomeDocument(Schema):
     some_prop: str
@@ -105,12 +105,12 @@ class SomeDocument(Schema):
     
 ```
 Every validation method has to start with the `validate_` prefix followed by the name of the property. The value argument is the value which will be set during instantiation. The method has to return the value as we set this value on the object.
-You can see all validation methods in the `validation.validator` package.
+You can see all validation methods in the `endorser.validator` package.
 
 ### Custom validation
-You can either create a new decorator and apply it on the validator (for examples see the `validation.validator` package) or apply the validation on the validation method itself.
+You can either create a new decorator and apply it on the validator (for examples see the `endorser.validator` package) or apply the validation on the validation method itself.
 ```Python
-from validation import construct_error
+from endorser.util import construct_error
 
 class SomeDocument(Schema):
     some_prop: str
@@ -128,7 +128,7 @@ class SomeDocument(Schema):
 It's possible to alter the value of `Schema` objects during validation:
 ```Python
 import uuid
-from validation.validator import valid_uuid
+from endorser import valid_uuid
 
 class User(Schema):
     id: uuid.UUID
@@ -160,7 +160,7 @@ assert user.unknown_prop == "any value"
 Validation happens during the instantiation of the `Schema` object. Note that there aren't any exception raised, you have to check if there were any errors yourself:
 ```Python
 import uuid
-from validation.validator import valid_uuid
+from endorser import valid_uuid
 
 class User(Schema):
     id: uuid.UUID
@@ -180,8 +180,8 @@ if user.instance_errors:
 ```
 You can use the `obj.instance_errors` property to check for errors on the instance and `obj.doc_errors` to check for validation errors on the whole document. This means if you have nested `Schema` objects, this property will return every error on every object from the root object:
 ```Python
-from validation.schema import Schema
-from validation.validator import min_size
+from endorser import Schema
+from endorser.validator import min_size
 
 class Address(Schema):
     zip_code: str
@@ -209,9 +209,9 @@ assert len(user.doc_errors) == 2
 ### DocumentConverter
 The DocumentConverter class is used to build structured data from a document. A document can either be a dictionary or a list of dictionaries. The DocumentConverter uses the `Schema` class to validate and build the objects from the document.
 ```Python
-from validation.converter import DocumentConverter
-from validation.schema import Schema
-from validation.validator import min_size
+from endorser import DocumentConverter
+from endorser import Schema
+from endorser.validator import min_size
 
 class Address(Schema):
     zip_code: str
