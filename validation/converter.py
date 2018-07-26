@@ -28,10 +28,7 @@ class DocumentConverter:
         if type(document) is dict:
             data = _transform_dict(document, doc_type, allow_unknown)
             if data.doc_errors:
-                raise ConversionError(
-                    [{"field": error['field'], "error": error['error']} for
-                     error in data.doc_errors]
-                )
+                raise ConversionError(data.doc_errors)
         elif type(document) is list:
             data = _transform_list(document, doc_type, allow_unknown)
             errors = []
@@ -39,9 +36,7 @@ class DocumentConverter:
                 if obj.doc_errors:
                     errors = errors + obj.doc_errors
             if errors:
-                raise ConversionError([{"field": error['field'],
-                                        "error": error['error']}
-                                       for error in errors])
+                raise ConversionError(errors)
         else:
             raise TypeError('%s type cannot be converted, it has to be either'
                             'a list or a dict' % str(type(document)))
