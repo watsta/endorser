@@ -45,7 +45,7 @@ def min_size(size: int):
     def decorator(validator_function):
         def validator(self, value):
             prop_name = validator_function.__name__.split('_')[1]
-            if len(value) < size:
+            if not value or len(value) < size:
                 self._validation_errors.append(
                     construct_error(prop_name,
                                     'minimum size %d not reached' % size,
@@ -61,7 +61,7 @@ def max_size(size: int):
     def decorator(validator_function):
         def validator(self, value):
             prop_name = validator_function.__name__.split('_')[1]
-            if len(value) > size:
+            if not value or len(value) > size:
                 self._validation_errors.append(
                     construct_error(prop_name,
                                     'maximum size %d exceeded' % size,
@@ -81,7 +81,7 @@ def valid_uuid(validation_field):
         prop_name = validation_field.__name__.split('_')[1]
         try:
             uuid.UUID(value)
-        except (ValueError, AttributeError):
+        except (ValueError, AttributeError, TypeError):
             self._validation_errors.append(
                 construct_error(prop_name,
                                 '{} is not a valid uuid'.format(value),

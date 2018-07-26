@@ -54,12 +54,13 @@ class ValidatorTest(unittest.TestCase):
         self.assertEqual([], self._validation_errors)
 
     def test_min_size_validator_with_invalid_value(self):
+        validator.min_size(5)(self.validation_field)(self, None)
         validator.min_size(5)(self.validation_field)(self, '1234')
         validator.min_size(5)(self.validation_field)(self, [1, 2, 3, 4])
         validator.min_size(5)(self.validation_field)(self, {1: 1, 2: 2,
                                                             3: 3, 4: 4})
         validator.min_size(5)(self.validation_field)(self, (1, 2, 3, 4))
-        self.assertEqual(4, len(self._validation_errors))
+        self.assertEqual(5, len(self._validation_errors))
         self.assertEqual('ValidatorTest',
                          self._validation_errors[0].get('class'))
         self.assertEqual('field',
@@ -73,12 +74,13 @@ class ValidatorTest(unittest.TestCase):
         self.assertEqual([], self._validation_errors)
 
     def test_max_size_validator_with_invalid_value(self):
+        validator.max_size(3)(self.validation_field)(self, None)
         validator.max_size(3)(self.validation_field)(self, '1234')
         validator.max_size(3)(self.validation_field)(self, [1, 2, 3, 4])
         validator.max_size(3)(self.validation_field)(self, {1: 1, 2: 2,
                                                             3: 3, 4: 4})
         validator.max_size(3)(self.validation_field)(self, (1, 2, 3, 4))
-        self.assertEqual(4, len(self._validation_errors))
+        self.assertEqual(5, len(self._validation_errors))
         self.assertEqual('ValidatorTest',
                          self._validation_errors[0].get('class'))
         self.assertEqual('field',
@@ -91,6 +93,8 @@ class ValidatorTest(unittest.TestCase):
 
     def test_validate_uuid_with_invalid_value(self):
         validator.valid_uuid(self.validation_field)(
+            self, None)
+        validator.valid_uuid(self.validation_field)(
             self, 'invalid-uuid')
         validator.valid_uuid(self.validation_field)(
             self, 123)
@@ -100,4 +104,4 @@ class ValidatorTest(unittest.TestCase):
             self, (1, 2))
         validator.valid_uuid(self.validation_field)(
             self, object())
-        self.assertEqual(5, len(self._validation_errors))
+        self.assertEqual(6, len(self._validation_errors))
