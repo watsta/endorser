@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 setup(
     name='object_validator',
-    version='0.0',
+    version='0.12',
     description='Annotation based python object validator',
     long_description='Annotation based python object validator',
     classifiers=[
