@@ -1,5 +1,7 @@
 # Endorser
 
+[![codecov](https://codecov.io/gh/watsta/endorser/branch/master/graph/badge.svg)](https://codecov.io/gh/watsta/endorser)
+
 A lightweight data validation and converter package for Python 3.6+.
 It's always better to work with a structured set of data instead of just a simple dictionary. This package provides an easy way to do the conversion seamlessly while it provides a set of tools to validate the data.
 The main purpose of this package is to create structured data from unstructured types while validating it.
