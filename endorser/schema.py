@@ -1,7 +1,7 @@
 import platform
 import typing
 
-from endorser.util import construct_error
+from endorser.error import construct_error, ErrorNames
 
 VERSION = platform.python_version().split(".")
 PY37 = VERSION[0] is '3' and VERSION[1] is '7'
@@ -77,7 +77,8 @@ class Schema:
         if not hasattr(self, attr_name):
             self._instance_errors.append(
                 construct_error(attr_name, "unknown attribute",
-                                self.__class__.__name__))
+                                self.__class__.__name__,
+                                name=ErrorNames.UNKNOWN_ATTRIBUTE.value))
 
     def _validate_type(self, attr_name, attr_val):
         """
@@ -110,7 +111,8 @@ class Schema:
                                 attr_name, "wrong type in index %s. expected: "
                                            "'%s', provided: '%s'" %
                                            (i, list_element_type, type(elem)),
-                                self.__class__.__name__)
+                                self.__class__.__name__,
+                                name=ErrorNames.WRONG_TYPE.value)
                         )
                         break
             except (IndexError, TypeError):
@@ -124,7 +126,8 @@ class Schema:
                 construct_error(attr_name,
                                 "wrong type. expected: '%s', provided: '%s'"
                                 % (annotated_type.__name__, type_.__name__),
-                                self.__class__.__name__))
+                                self.__class__.__name__,
+                                name=ErrorNames.WRONG_TYPE.value))
 
     def _check_mandatory_fields(self, mandatory_fields):
         for mandatory in mandatory_fields:
@@ -132,7 +135,9 @@ class Schema:
                 self._instance_errors.append(
                     construct_error(mandatory,
                                     "mandatory field not set",
-                                    self.__class__.__name__))
+                                    self.__class__.__name__,
+                                    name=ErrorNames.MANDATORY_FIELD_NOT_SET
+                                    .value))
 
     @property
     def instance_errors(self):

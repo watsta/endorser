@@ -3,7 +3,7 @@ from typing import List
 
 from endorser import DocumentConverter
 from endorser import Schema
-from endorser.util import construct_error
+from endorser.error import construct_error
 from endorser.validator import min_size, not_empty, max_size
 
 
