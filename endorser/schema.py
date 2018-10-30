@@ -1,6 +1,11 @@
+import platform
 import typing
 
 from endorser.util import construct_error
+
+VERSION = platform.python_version().split(".")
+PY37 = VERSION[0] is '3' and VERSION[1] is '7'
+GENERIC_TYPE = typing._GenericAlias if PY37 else typing.GenericMeta
 
 
 class Schema:
@@ -92,8 +97,9 @@ class Schema:
             # if the value is None, it's type will be NoneType
             # we check for mandatory value assignment later
             pass
-        elif type(annotated_type) is typing.GenericMeta and \
-                issubclass(annotated_type, list):
+        elif type(annotated_type) is GENERIC_TYPE and \
+                ((PY37 and annotated_type._name is 'List') or
+                 (not PY37 and issubclass(annotated_type, list))):
             # check typing.List
             try:
                 list_element_type = annotated_type.__args__[0]
