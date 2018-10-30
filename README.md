@@ -112,7 +112,7 @@ You can see all validation methods in the `endorser.validator` package.
 ### Custom validation
 You can either create a new decorator and apply it on the validator (for examples see the `endorser.validator` package) or apply the validation on the validation method itself.
 ```Python
-from endorser.util import construct_error
+from endorser.error import construct_error
 
 class SomeDocument(Schema):
     some_prop: str

@@ -1,7 +1,7 @@
 import functools
 import uuid
 
-from endorser.util import construct_error
+from endorser.error import construct_error, ErrorNames
 
 
 def not_none(validation_field):
@@ -16,7 +16,8 @@ def not_none(validation_field):
             self.instance_errors.append(
                 construct_error(prop_name,
                                 'None value',
-                                self.__class__.__name__))
+                                self.__class__.__name__,
+                                name=ErrorNames.NONE_VALUE.value))
         return validation_field(self, value)
 
     return validator
@@ -34,7 +35,8 @@ def not_empty(validation_field):
             self.instance_errors.append(
                 construct_error(prop_name,
                                 'empty value',
-                                self.__class__.__name__))
+                                self.__class__.__name__,
+                                name=ErrorNames.EMPTY_VALUE.value))
         return validation_field(self, value)
 
     return validator
@@ -50,7 +52,9 @@ def min_size(size: int):
                 self.instance_errors.append(
                     construct_error(prop_name,
                                     'minimum size %d not reached' % size,
-                                    self.__class__.__name__))
+                                    self.__class__.__name__,
+                                    name=ErrorNames.MIN_SIZE_NOT_REACHED
+                                    .value))
             return validator_function(self, value)
 
         return validator
@@ -68,7 +72,8 @@ def max_size(size: int):
                 self.instance_errors.append(
                     construct_error(prop_name,
                                     'maximum size %d exceeded' % size,
-                                    self.__class__.__name__))
+                                    self.__class__.__name__,
+                                    name=ErrorNames.MAX_SIZE_EXCEEDED.value))
             return validator_function(self, value)
 
         return validator
@@ -90,7 +95,8 @@ def valid_uuid(validation_field):
             self.instance_errors.append(
                 construct_error(prop_name,
                                 '{} is not a valid uuid'.format(value),
-                                self.__class__.__name__))
+                                self.__class__.__name__,
+                                name=ErrorNames.INVALID_UUID.value))
         return validation_field(self, value)
 
     return validator
