@@ -87,7 +87,7 @@ user = User(email=None)  # valid, as email can have the value None
     from endorser.validator import not_none
     
     @not_none
-    def valid_email(self, email):
+    def validate_email(self, email):
         return email
         
 user = User(email=None)  # not valid, as it's both mandatory and cannot be None
