@@ -123,7 +123,7 @@ class Schema:
             self._instance_errors.append(
                 construct_error(attr_name,
                                 "wrong type. expected: '%s', provided: '%s'"
-                                % (annotated_type, type_),
+                                % (annotated_type.__name__, type_.__name__),
                                 self.__class__.__name__))
 
     def _check_mandatory_fields(self, mandatory_fields):
