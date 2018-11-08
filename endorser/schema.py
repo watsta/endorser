@@ -33,13 +33,17 @@ class Schema:
 
         return super(Schema, cls).__new__(cls)
 
-    def __init__(self, _allow_unknown=False, **kwargs):
+    def __init__(self, _allow_unknown=False, *args, **kwargs):
         """
         Initializes the `Schema` object, running provided validations.
 
         :param _allow_unknown: whether to allow unknown properties on the
             object
         """
+        if args:
+            raise AttributeError("you can only use keyword arguments to "
+                                 "instantiate a Schema object")
+
         mandatory_fields = self._mandatory_fields.copy()
         self._instance_errors = []
         self._doc_errors = []
