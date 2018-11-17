@@ -59,7 +59,7 @@ class ConverterTest(unittest.TestCase):
         self.assertEqual(result[0].str_prop, self.A_STRING)
         self.assertEqual(result[0].custom_obj.str_prop, self.A_STRING_2)
         self.assertEqual(result[0].prop_with_default_value,
-                         ParentSchema.prop_with_default_value)
+                         ParentSchema.optional_with_default_value)
         self.assertEqual(result[1].str_prop, self.A_STRING_3)
         self.assertEqual(result[1].custom_obj.str_prop, self.A_STRING_4)
         self.assertEqual(result[1].prop_with_default_value, self.NOT_DEF_VAL)

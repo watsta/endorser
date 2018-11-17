@@ -1,5 +1,7 @@
 import unittest
+import typing
 
+from endorser import Schema
 from test.data import CustomSchema, ParentSchema
 
 
@@ -37,14 +39,21 @@ class TestSchema(unittest.TestCase):
                                                        self.str_prop_4])
         self.assertEqual(schema.typed_list_prop_with_custom_obj,
                          [self.test_schema_2])
-        self.assertEqual(schema.prop_with_default_value, 'def')
+        self.assertEqual(schema.optional_with_default_value, 'def')
 
     def test_updated_default_value(self):
         other_val = 'some_other_value'
-        self.PROPERTIES['prop_with_default_value'] = other_val
+        self.PROPERTIES['optional_with_default_value'] = other_val
         schema = ParentSchema(**self.PROPERTIES)
 
-        self.assertEqual(schema.prop_with_default_value, other_val)
+        self.assertEqual(schema.optional_with_default_value, other_val)
+
+    def test_optional_with_invalid_default_value(self):
+        class SchemaToTest(Schema):
+            prop: typing.Optional[str] = 193
+
+        with self.assertRaises(AttributeError):
+            SchemaToTest()
 
     def test_incorrect_type(self):
         invalid_prop = 'str_prop'
@@ -98,3 +107,17 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(schema.str_prop, None)
         self.assertEqual(schema.instance_errors[0]['class'], 'ParentSchema')
         self.assertEqual(schema.instance_errors[0]['field'], 'str_prop')
+
+    def test_non_optional_with_default_value(self):
+        class SchemaToTest(Schema):
+            prop: str = 193
+
+        with self.assertRaises(AttributeError):
+            SchemaToTest()
+
+    def test_schema_creation_with_non_keyword_arguments(self):
+        class SchemaToTest(Schema):
+            prop: str
+
+        with self.assertRaises(AttributeError):
+            SchemaToTest("any-value")
