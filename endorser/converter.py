@@ -1,4 +1,5 @@
-from typing import get_type_hints, TypeVar, Type, Union, List
+import typing
+from typing import get_type_hints, TypeVar, Type, Union, List, _Union
 
 from endorser.schema import Schema
 
@@ -58,7 +59,11 @@ def _transform_dict(document: dict, doc_type: Type[T],
     :param doc_type: the class to transform to
     :return: the transformed object
     """
-    hints = get_type_hints(doc_type)
+    if _is_optional(doc_type):
+        hints = get_type_hints(doc_type.__args__[0])
+        doc_type = doc_type.__args__[0]
+    else:
+        hints = get_type_hints(doc_type)
     for k, v in document.items():
         if k not in hints:
             raise ValueError('%s is not type hinted' % k)
@@ -93,3 +98,16 @@ def _transform_list(document: list, doc_type: Type[T],
                         'provide a type for the content of the list as well')
     return [_transform_dict(obj, type_, allow_unknown) for obj in
             document]
+
+
+def _is_optional(attribute_type):
+    """
+    Checks whether the attribute is hinted with Optional type.
+
+    :param attribute_type: the attribute to check
+    :return: whether the attribute's type hint is optional or not
+    """
+    if isinstance(attribute_type, typing._Union) and \
+            attribute_type.__args__[1] is type(None):
+        return True
+    return False
