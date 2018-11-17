@@ -37,8 +37,7 @@ class Schema:
                                 f"'{desired_type.__name__}' but got "
                                 f"'{type(attr_value).__name__}'")
                 else:
-                    if hasattr(cls, property_name) \
-                            and getattr(cls, property_name) is not None:
+                    if hasattr(cls, property_name):
                         raise AttributeError(
                             f"{property_name} has a default value and it's "
                             f"not an Optional.")

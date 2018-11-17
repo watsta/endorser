@@ -36,6 +36,13 @@ class TestSchema(unittest.TestCase):
         with self.assertRaises(AttributeError):
             SchemaToTest(prop=0)
 
+    def test_optional_field_with_None_default_value(self):
+        class SchemaToTest(Schema):
+            prop: int = None
+
+        with self.assertRaises(AttributeError):
+            SchemaToTest(prop=0)
+
     def test_schema_creation_attribute_assignment(self):
         class SchemaToTest(Schema):
             prop: int
