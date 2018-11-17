@@ -3,14 +3,14 @@ from enum import Enum
 
 
 def construct_error(field_name: str,
-                    error: str,
+                    msg: str,
                     class_name: str=None,
                     name: str = None, **kwargs) -> dict:
     """
     Constructs an error from the given params.
 
     :param field_name: the name of the field which failed the validation
-    :param error: the error message about how the validation failed
+    :param msg: the error message about how the validation failed
     :param class_name: the name of the class, optional
     :param name: a unique name of the error
     :param kwargs: any additional keyword arguments which will be added to the
@@ -22,7 +22,7 @@ def construct_error(field_name: str,
                       "param, later it will be mandatory",
                       category=DeprecationWarning)
 
-    error = {'field': field_name, 'error': error}
+    error = {'field': field_name, 'error': msg}
 
     if name:
         error['name'] = name
