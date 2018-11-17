@@ -43,7 +43,7 @@ class ConverterTest(unittest.TestCase):
             }, {
                 "str_prop": "values in a list 4"
             }],
-            "prop_with_default_value": self.NOT_DEF_VAL
+            "optional_with_default_value": self.NOT_DEF_VAL
         }
 
     def test_converter(self):
@@ -58,11 +58,12 @@ class ConverterTest(unittest.TestCase):
         self.assertEqual(2, len(result))
         self.assertEqual(result[0].str_prop, self.A_STRING)
         self.assertEqual(result[0].custom_obj.str_prop, self.A_STRING_2)
-        self.assertEqual(result[0].prop_with_default_value,
+        self.assertEqual(result[0].optional_with_default_value,
                          ParentSchema.optional_with_default_value)
         self.assertEqual(result[1].str_prop, self.A_STRING_3)
         self.assertEqual(result[1].custom_obj.str_prop, self.A_STRING_4)
-        self.assertEqual(result[1].prop_with_default_value, self.NOT_DEF_VAL)
+        self.assertEqual(result[1].optional_with_default_value,
+                         self.NOT_DEF_VAL)
 
     def test_converter_with_invalid_prop(self):
         prop = "int_prop"
