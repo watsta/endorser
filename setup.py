@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='endorser',
-    version='0.44',
+    version='1.0.0',
     description='Annotation based python object validator',
     long_description=long_description,
     long_description_content_type="text/markdown",
