@@ -3,7 +3,8 @@
 [![codecov](https://codecov.io/gh/watsta/endorser/branch/master/graph/badge.svg)](https://codecov.io/gh/watsta/endorser)
 
 A lightweight data validation and converter package for Python 3.6+.
-It's always better to work with a structured set of data instead of just a simple dictionary. This package provides an easy way to do the conversion seamlessly while it provides a set of tools to validate the data.
+It's always better to work with a structured set of data instead of just a simple dictionary. 
+This package provides an easy way to do the conversion seamlessly while it provides a set of tools to validate the data.
 The main purpose of this package is to create structured data from unstructured types while validating it.
 
 ```Python
@@ -75,23 +76,20 @@ class User(Schema):
     age: typing.Optional[int] = 0  # assigning a value will be used as default
     address: typing.Optional[Address] = None  # must be an instance of Schema
 ```
-If you want to make sure that properties cannot be `None`, apply the `@validator.not_none` decorator:
+If you want to be able to set properties with possible `None` values you have to set the default value `None` to
+the optional properties:
 ```Python
 class User(Schema):
     email: str
     username: typing.Optional[str]
     
 user = User(email="some@email.com")  # valid, as username can be omitted
-user = User(email="some@email.com", username=None)  # valid, as username can have the value None
+user = User(email="some@email.com", username=None)  # invalid, as username cannot have the value None
 
     ...
-    from endorser.validator import not_none
+    username: typing.Optional[str] = None
     
-    @not_none
-    def validate_email(self, email):
-        return email
-        
-user = User(email="some@email.com", username=None)  # not valid, as username is both mandatory and cannot be None
+user = User(email="some@email.com", username=None)  # valid, as username is both optional and has the default value None
 ```
 
 ### Validation
