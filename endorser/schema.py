@@ -32,7 +32,8 @@ class Schema:
                     optional_fields.append(property_name)
                     if hasattr(cls, property_name):
                         attr_value = getattr(cls, property_name)
-                        if not isinstance(attr_value, desired_type):
+                        if not isinstance(attr_value, desired_type) and \
+                                not isinstance(attr_value, type(None)):
                             raise AttributeError(
                                 f"Optional type hinted with type " 
                                 f"'{desired_type.__name__}' but got "

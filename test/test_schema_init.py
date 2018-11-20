@@ -112,3 +112,12 @@ class TestSchema(unittest.TestCase):
 
         self.assertEqual(schema.prop, default_prop_value)
         self.assertEqual(schema.doc_errors, [])
+
+    def test_optional_with_default_None_value(self):
+
+        class SchemaToTest(Schema):
+            prop: typing.Optional[str] = None
+
+        schema = SchemaToTest(prop=None)
+        print(schema)
+        self.assertEqual(schema.prop, None)
