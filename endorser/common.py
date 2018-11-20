@@ -34,7 +34,7 @@ def is_typing_list(attribute_type):
     :return: whether the attribute is hinted with typing.List
     """
     result = False
-    if type(attribute_type) is _GENERIC_PARENT:
+    if isinstance(attribute_type, _GENERIC_PARENT) :
         if _PY37 and attribute_type._name is 'List':
             result = True
         elif not _PY37 and issubclass(attribute_type, list):

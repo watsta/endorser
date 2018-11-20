@@ -118,7 +118,7 @@ class Schema:
         list_element_type = annotated_type.__args__[0]
 
         for i, elem in enumerate(attr_val):
-            if not type(elem) is list_element_type:
+            if not isinstance(elem, list_element_type):
                 self._instance_errors.append(
                     construct_error(
                         attr_name, "wrong type in index %s. expected: "
@@ -133,7 +133,7 @@ class Schema:
         annotated_type = self.__class__.__annotations__[attr_name]
         desired_type = annotated_type.__args__[0]
 
-        if not type(attr_val) is desired_type:
+        if not isinstance(attr_val, desired_type):
             construct_error(
                 attr_name,
                 f"wrong type. expected: '{annotated_type.__name__}', "
