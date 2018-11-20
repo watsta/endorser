@@ -1,4 +1,7 @@
+import typing
 import unittest
+
+from endorser.schema import Schema
 
 from test.data import CustomSchema, ParentSchema
 
@@ -98,3 +101,14 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(schema.str_prop, None)
         self.assertEqual(schema.instance_errors[0]['class'], 'ParentSchema')
         self.assertEqual(schema.instance_errors[0]['field'], 'str_prop')
+
+    def test_optional_with_default_value(self):
+        default_prop_value = "prop-default"
+
+        class SchemaToTest(Schema):
+            prop: typing.Optional[str] = default_prop_value
+
+        schema = SchemaToTest()
+
+        self.assertEqual(schema.prop, default_prop_value)
+        self.assertEqual(schema.doc_errors, [])
