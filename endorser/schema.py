@@ -1,12 +1,5 @@
-import platform
-import typing
-
+from endorser.common import is_optional, is_typing_list
 from endorser.error import construct_error, ErrorNames
-
-VERSION = platform.python_version().split(".")
-PY37 = VERSION[0] is '3' and VERSION[1] is '7'
-GENERIC_PARENT = typing._GenericAlias if PY37 else typing.GenericMeta
-OPTIONAL_PARENT = typing._GenericAlias if PY37 else typing._Union
 
 
 class Schema:
@@ -27,7 +20,7 @@ class Schema:
                 annotated_type = cls.__annotations__[property_name]
 
                 # collect optional fields
-                if _is_optional(annotated_type):
+                if is_optional(annotated_type):
                     desired_type = annotated_type.__args__[0]
                     optional_fields.append(property_name)
                     if hasattr(cls, property_name):
@@ -35,7 +28,7 @@ class Schema:
                         if not isinstance(attr_value, desired_type) and \
                                 not isinstance(attr_value, type(None)):
                             raise AttributeError(
-                                f"Optional type hinted with type " 
+                                f"Optional type hinted with type "
                                 f"'{desired_type.__name__}' but got "
                                 f"'{type(attr_value).__name__}'")
                 else:
@@ -108,9 +101,9 @@ class Schema:
                                     self.__class__.__name__,
                                     name=ErrorNames.UNKNOWN_ATTRIBUTE.value))
             return
-        if _is_typing_list(annotated_type):
+        if is_typing_list(annotated_type):
             self._validate_typing_list(attr_name, attr_val)
-        elif _is_optional(annotated_type):
+        elif is_optional(annotated_type):
             self._validate_optional_type(attr_name, attr_val)
         elif not type_ == annotated_type:
             self._instance_errors.append(
@@ -192,38 +185,3 @@ class Schema:
                 class_vars[k] = v
         class_vars.update(self.__dict__)
         return str(class_vars)
-
-
-def _is_optional(attribute_type):
-    """
-    Checks whether the attribute is hinted with Optional type.
-
-    :param attribute_type: the attribute to check
-    :return: whether the attribute's type hint is optional or not
-    """
-    instance = isinstance(attribute_type, OPTIONAL_PARENT)
-    if PY37 and instance:
-        try:
-            if attribute_type.__args__[1] is type(None):
-                return True
-        except IndexError:
-            return False
-    elif instance and attribute_type.__args__[1] is type(None):
-        return True
-    return False
-
-
-def _is_typing_list(attribute_type):
-    """
-    Checks whether the attribute is hinted with typing.List.
-
-    :param attribute_type: the attribute to check
-    :return: whether the attribute is hinted with typing.List
-    """
-    result = False
-    if type(attribute_type) is GENERIC_PARENT:
-        if PY37 and attribute_type._name is 'List':
-            result = True
-        elif not PY37 and issubclass(attribute_type, list):
-            result = True
-    return result

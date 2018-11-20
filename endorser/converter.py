@@ -1,16 +1,10 @@
-import platform
-import typing
 from typing import get_type_hints, TypeVar, Type, Union, List
 
+from endorser.common import is_optional
 from endorser.schema import Schema
 
 S = TypeVar('S', dict, list)
 T = TypeVar('T', bound=Schema)
-
-VERSION = platform.python_version().split(".")
-PY37 = VERSION[0] is '3' and VERSION[1] is '7'
-GENERIC_PARENT = typing._GenericAlias if PY37 else typing.GenericMeta
-OPTIONAL_PARENT = typing._GenericAlias if PY37 else typing._Union
 
 
 class ConversionError(Exception):
@@ -65,7 +59,7 @@ def _transform_dict(document: dict, doc_type: Type[T],
     :param doc_type: the class to transform to
     :return: the transformed object
     """
-    if _is_optional(doc_type):
+    if is_optional(doc_type):
         hints = get_type_hints(doc_type.__args__[0])
         doc_type = doc_type.__args__[0]
     else:
@@ -104,22 +98,3 @@ def _transform_list(document: list, doc_type: Type[T],
                         'provide a type for the content of the list as well')
     return [_transform_dict(obj, type_, allow_unknown) for obj in
             document]
-
-
-def _is_optional(attribute_type):
-    """
-    Checks whether the attribute is hinted with Optional type.
-
-    :param attribute_type: the attribute to check
-    :return: whether the attribute's type hint is optional or not
-    """
-    instance = isinstance(attribute_type, OPTIONAL_PARENT)
-    if PY37 and instance:
-        try:
-            if attribute_type.__args__[1] is type(None):
-                return True
-        except IndexError:
-            return False
-    elif instance and attribute_type.__args__[1] is type(None):
-        return True
-    return False
