@@ -119,5 +119,5 @@ class TestSchema(unittest.TestCase):
             prop: typing.Optional[str] = None
 
         schema = SchemaToTest(prop=None)
-        print(schema)
+
         self.assertEqual(schema.prop, None)
