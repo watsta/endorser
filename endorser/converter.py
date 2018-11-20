@@ -1,10 +1,16 @@
+import platform
 import typing
-from typing import get_type_hints, TypeVar, Type, Union, List, _Union
+from typing import get_type_hints, TypeVar, Type, Union, List
 
 from endorser.schema import Schema
 
 S = TypeVar('S', dict, list)
 T = TypeVar('T', bound=Schema)
+
+VERSION = platform.python_version().split(".")
+PY37 = VERSION[0] is '3' and VERSION[1] is '7'
+GENERIC_PARENT = typing._GenericAlias if PY37 else typing.GenericMeta
+OPTIONAL_PARENT = typing._GenericAlias if PY37 else typing._Union
 
 
 class ConversionError(Exception):
@@ -107,7 +113,13 @@ def _is_optional(attribute_type):
     :param attribute_type: the attribute to check
     :return: whether the attribute's type hint is optional or not
     """
-    if isinstance(attribute_type, typing._Union) and \
-            attribute_type.__args__[1] is type(None):
+    instance = isinstance(attribute_type, OPTIONAL_PARENT)
+    if PY37 and instance:
+        try:
+            if attribute_type.__args__[1] is type(None):
+                return True
+        except IndexError:
+            return False
+    elif instance and attribute_type.__args__[1] is type(None):
         return True
     return False

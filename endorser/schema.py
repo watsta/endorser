@@ -5,7 +5,8 @@ from endorser.error import construct_error, ErrorNames
 
 VERSION = platform.python_version().split(".")
 PY37 = VERSION[0] is '3' and VERSION[1] is '7'
-GENERIC_TYPE = typing._GenericAlias if PY37 else typing.GenericMeta
+GENERIC_PARENT = typing._GenericAlias if PY37 else typing.GenericMeta
+OPTIONAL_PARENT = typing._GenericAlias if PY37 else typing._Union
 
 
 class Schema:
@@ -199,8 +200,14 @@ def _is_optional(attribute_type):
     :param attribute_type: the attribute to check
     :return: whether the attribute's type hint is optional or not
     """
-    if isinstance(attribute_type, typing._Union) and \
-            attribute_type.__args__[1] is type(None):
+    instance = isinstance(attribute_type, OPTIONAL_PARENT)
+    if PY37 and instance:
+        try:
+            if attribute_type.__args__[1] is type(None):
+                return True
+        except IndexError:
+            return False
+    elif instance and attribute_type.__args__[1] is type(None):
         return True
     return False
 
@@ -213,7 +220,7 @@ def _is_typing_list(attribute_type):
     :return: whether the attribute is hinted with typing.List
     """
     result = False
-    if type(attribute_type) is GENERIC_TYPE:
+    if type(attribute_type) is GENERIC_PARENT:
         if PY37 and attribute_type._name is 'List':
             result = True
         elif not PY37 and issubclass(attribute_type, list):
