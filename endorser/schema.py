@@ -23,19 +23,15 @@ class Schema:
                 if is_optional(annotated_type):
                     desired_type = annotated_type.__args__[0]
                     optional_fields.append(property_name)
+
+                    # validate default value type
                     if hasattr(cls, property_name):
                         attr_value = getattr(cls, property_name)
-                        if not isinstance(attr_value, desired_type) and \
-                                not isinstance(attr_value, type(None)):
-                            raise AttributeError(
-                                f"Optional type hinted with type "
-                                f"'{desired_type.__name__}' but got "
-                                f"'{type(attr_value).__name__}'")
-                else:
-                    if hasattr(cls, property_name):
-                        raise AttributeError(
-                            f"{property_name} has a default value and it's "
-                            f"not an Optional.")
+                        cls._validate_type_hint(desired_type, attr_value)
+                elif hasattr(cls, property_name):
+                    raise AttributeError(
+                        f"{property_name} has a default value and it's "
+                        f"not an Optional.")
 
                 # assign empty/None class variables from annotations
                 # necessary to check for unknown attributes later on
@@ -48,6 +44,14 @@ class Schema:
             cls._processed = True
 
         return super(Schema, cls).__new__(cls)
+
+    @classmethod
+    def _validate_type_hint(cls, desired_type, attr_value):
+        if not isinstance(attr_value, (desired_type, type(None))):
+            raise AttributeError(
+                f"Optional type hinted with type "
+                f"'{desired_type.__name__}' but got "
+                f"'{type(attr_value).__name__}'")
 
     def __init__(self, _allow_unknown=False, **kwargs):
         """
