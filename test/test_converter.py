@@ -1,5 +1,6 @@
 import unittest
-from typing import List
+from unittest.mock import Mock
+from typing import List, TypeVar
 
 from endorser import ConversionError
 from endorser import DocumentConverter
@@ -20,6 +21,9 @@ class ConverterTest(unittest.TestCase):
             "int_prop": 123,
             "list_prop": ["some", 2, "values"],
             "custom_obj": {
+                "str_prop": self.A_STRING_2
+            },
+            "optional_custom_obj": {
                 "str_prop": self.A_STRING_2
             },
             "typed_list_prop": ["has", "to", "be", "string"],
@@ -74,7 +78,44 @@ class ConverterTest(unittest.TestCase):
         self.assertEqual(1, len(e.exception.errors))
         self.assertEqual(e.exception.errors[0]['field'], prop)
 
+    def test_converter_with_invalid_prop_for_list(self):
+        prop = "int_prop"
+        val = "string"
+
+        data = [self.VALID_DOCUMENT, self.ANOTHER_DOCUMENT]
+        data[0][prop] = val
+        with self.assertRaises(ConversionError) as e:
+            result = self.converter.convert(data, List[ParentSchema])
+        self.assertEqual(1, len(e.exception.errors))
+        self.assertEqual(e.exception.errors[0]['field'], prop)
+
     def test_schema_with_not_type_hinted_prop(self):
         with self.assertRaises(ValueError):
             self.converter.convert({'str_prop': 'str', 'invalid_prop': 123},
                                    InvalidSchema)
+
+    def test_empty_document_provided(self):
+        with self.assertRaises(ValueError):
+            self.converter.convert({}, ParentSchema)
+
+    def test_no_document_provided(self):
+        with self.assertRaises(ValueError):
+            self.converter.convert(None, ParentSchema)
+
+    def test_unsupported_document_type(self):
+        with self.assertRaises(TypeError):
+            self.converter.convert(bytes, ParentSchema)
+
+    def test_generic_list_type_python_3_6(self):
+        unstubbed = List.__args__
+        List.__args__ = Mock(side_effect=TypeError)
+        with self.assertRaises(TypeError):
+            self.converter.convert([self.VALID_DOCUMENT], List)
+        List.__args__ = unstubbed
+
+    def test_generic_list_type_python_3_7(self):
+        unstubbed = List.__args__
+        List.__args__ = [TypeVar('T')]
+        with self.assertRaises(TypeError):
+            self.converter.convert([self.VALID_DOCUMENT], List)
+        List.__args__ = unstubbed
