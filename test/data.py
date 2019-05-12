@@ -13,6 +13,7 @@ class ParentSchema(Schema):
     list_prop: list
     dict_prop: Optional[dict]
     custom_obj: CustomSchema
+    optional_custom_obj: Optional[CustomSchema]
     typed_list_prop: List[str]
     typed_list_prop_with_custom_obj: List[CustomSchema]
     optional_with_default_value: Optional[str] = 'def'

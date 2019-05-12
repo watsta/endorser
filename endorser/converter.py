@@ -91,10 +91,14 @@ def _transform_list(document: list, doc_type: Type[T],
     :param doc_type: the class to transform to
     :return: the transformed object
     """
+    not_hinted_error = ('generic List type cannot be used as document type, '
+                        'provide a type for the content of the list as well')
     try:
         type_ = doc_type.__args__[0]
-    except TypeError:
-        raise TypeError('generic List type cannot be used as document type, '
-                        'provide a type for the content of the list as well')
+    except TypeError as e:
+        raise TypeError(not_hinted_error)
+    if isinstance(type_, TypeVar):
+        raise TypeError(not_hinted_error)
+
     return [_transform_dict(obj, type_, allow_unknown) for obj in
             document]
