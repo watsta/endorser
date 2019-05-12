@@ -1,5 +1,5 @@
 import unittest
-from typing import List
+from typing import List, Optional
 
 from endorser import DocumentConverter
 from endorser import Schema
@@ -28,8 +28,8 @@ class Phone(Schema):
 
 class Address(Schema):
     zip_code: str
-    address_name: str = None
-    phone: Phone = None
+    address_name: Optional[str]
+    phone: Optional[Phone]
 
     def validate_zip_code(self, zip_code):
         if len(zip_code) != 4:
@@ -53,7 +53,7 @@ class UserRegistration(Schema):
     email: str
     password: str
     first_name: str
-    last_name: str = None
+    last_name: Optional[str]
     address: Address
     hobbies: List[Hobby]
 

@@ -3,24 +3,26 @@
 [![codecov](https://codecov.io/gh/watsta/endorser/branch/master/graph/badge.svg)](https://codecov.io/gh/watsta/endorser)
 
 A lightweight data validation and converter package for Python 3.6+.
-It's always better to work with a structured set of data instead of just a simple dictionary. This package provides an easy way to do the conversion seamlessly while it provides a set of tools to validate the data.
+It's always better to work with a structured set of data instead of just a simple dictionary. 
+This package provides an easy way to do the conversion seamlessly while it provides a set of tools to validate the data.
 The main purpose of this package is to create structured data from unstructured types while validating it.
 
 ```Python
+import typing
 from endorser import DocumentConverter
 from endorser import Schema
-from endorser import min_size
+from endorser.validator import min_size
 
 class Address(Schema):
     zip_code: str
     house_number: int
-    addition: str = None
+    addition: typing.Optional[str]
 
 class User(Schema):
     email: str
     username: str
-    firstname: str = None  # assigning None as default makes it optional during instantiation
-    address: Address = None  # nest Schema classes
+    firstname: typing.Optional[str]
+    address: typing.Optional[Address]  # nest Schema classes
 
     @min_size(5)
     def validate_username(self, username):
@@ -64,39 +66,36 @@ Endorser doesn't have any dependencies outside of pytest and pytest-runner.
 Base class for documents. 
 * Must not be instantiated directly
 * Every attribute must be type hinted
-* As of now, supported type hints are the primivites, list, dict, typing.List and subclasses of Schema
+* As of now, supported type hints are the primivites, list, dict, typing.List, typing.Optional and subclasses of Schema
 * Every subclass of `Schema` must be considered as final and immutable
 ```Python
 class User(Schema):
     email: str
     username: str
-    firstname: str = None  # assigning None as default makes it optional
-    age: int = 0  # assigning anything will be used as default value
-    address: Address = None  # must be an instance of Schema
+    firstname: typing.Optional[str]
+    age: typing.Optional[int] = 0  # assigning a value will be used as default
+    address: typing.Optional[Address] = None  # must be an instance of Schema
 ```
-Note that it's possible for every attribute to have `None` as it's value, the default `None` only means that the value can be omitted from the document. If you want to make sure that the value cannot be `None`, apply the `@validator.not_none` decorator:
+If you want to be able to set properties with possible `None` values you have to set the default value `None` to
+the optional properties:
 ```Python
 class User(Schema):
     email: str
-    username: str = None
+    username: typing.Optional[str]
     
 user = User(email="some@email.com")  # valid, as username can be omitted
-user = User(email=None)  # valid, as email can have the value None
+user = User(email="some@email.com", username=None)  # invalid, as username cannot have the value None
 
     ...
-    from endorser.validator import not_none
+    username: typing.Optional[str] = None
     
-    @not_none
-    def validate_email(self, email):
-        return email
-        
-user = User(email=None)  # not valid, as it's both mandatory and cannot be None
+user = User(email="some@email.com", username=None)  # valid, as username is both optional and has the default value None
 ```
 
 ### Validation
 You can validate `Schema` objects with following this convention:
 ```Python
-from endorser import min_size
+from endorser.validator import min_size
 
 class SomeDocument(Schema):
     some_prop: str
@@ -106,11 +105,14 @@ class SomeDocument(Schema):
         return value
     
 ```
-Every validation method has to start with the `validate_` prefix followed by the name of the property. The value argument is the value which will be set during instantiation. The method has to return the value as we set this value on the object.
-You can see all validation methods in the `endorser.validator` package.
+Every validation method has to start with the `validate_` prefix followed by the name of the property. 
+The value argument is the value which will be set during instantiation. The method has to return the 
+value as we set this value on the object. You can see all validation methods in the `endorser.validator` package.
 
 ### Custom validation
-You can either create a new decorator and apply it on the validator (for examples see the `endorser.validator` package) or apply the validation on the validation method itself.
+You can either create a new decorator and apply it on the validator (for examples see the 
+`endorser.validator` package) or apply the validation on the validation method itself.
+
 ```Python
 from endorser.error import construct_error
 
@@ -129,13 +131,14 @@ class SomeDocument(Schema):
 ### Alter values
 It's possible to alter the value of `Schema` objects during validation:
 ```Python
+import typing
 import uuid
-from endorser import valid_uuid
+from endorser.validator import valid_uuid
 
 class User(Schema):
     id: uuid.UUID
     email: str
-    username: str = None
+    username: typing.Optional[str]
     
     @valid_uuid  # ensures that the ID is a valid UUID
     def validate_id(self, id): 
@@ -145,7 +148,9 @@ user = User(id="7b4f95e3-4fbe-4f94-838f-c34950240274",
             email="some@email.com")
 assert isinstance(user.id, uuid.UUID)
 ```
-You can also create custom decorators to modify property values. Note that we hinted the `id` property to be of type `uuid.UUID` but we instantiate it with a string value. You are responsible to return the correct value type which you defined on the `Schema` class.
+You can also create custom decorators to modify property values. Note that we 
+hinted the `id` property to be of type `uuid.UUID` but we instantiate it with a 
+string value. You are responsible to return the correct value type which you defined on the `Schema` class.
 
 ### Instantiation
 You have to use keyword arguments to instantiate a `Schema` object:
@@ -159,15 +164,18 @@ user = User(_allow_unknown=True, email="some@email.com", unknown_prop="any value
 assert user.unknown_prop == "any value"
 ```
 
-Validation happens during the instantiation of the `Schema` object. Note that there aren't any exception raised, you have to check if there were any errors yourself:
+Validation happens during the instantiation of the `Schema` object. Note that there 
+aren't any exception raised, you have to check if there were any errors yourself:
+
 ```Python
+import typing
 import uuid
 from endorser import valid_uuid
 
 class User(Schema):
     id: uuid.UUID
     email: str
-    username: str = None
+    username: typing.Optional[str]
     
     @valid_uuid  # ensures that the ID is a valid UUID
     def validate_id(self, id): 
@@ -180,21 +188,24 @@ if user.instance_errors:
     for error in user.instance_errors:
         print("invalid value for property %s: %s" % (error["field"], error["error"]))
 ```
-You can use the `obj.instance_errors` property to check for errors on the instance and `obj.doc_errors` to check for validation errors on the whole document. This means if you have nested `Schema` objects, this property will return every error on every object from the root object:
+You can use the `obj.instance_errors` property to check for errors on the instance and 
+`obj.doc_errors` to check for validation errors on the whole document. This means if you 
+have nested `Schema` objects, this property will return every error on every object from the root object:
 ```Python
+import typing
 from endorser import Schema
 from endorser.validator import min_size
 
 class Address(Schema):
     zip_code: str
     house_number: int
-    addition: str = None
+    addition: typing.Optional[str]
 
 class User(Schema):
     email: str
     username: str
-    firstname: str = None 
-    address: Address = None
+    firstname: typing.Optional[str]
+    address: typing.Optional[Address]
 
     @min_size(5)
     def validate_username(self, username):
@@ -211,6 +222,7 @@ assert len(user.doc_errors) == 2
 ### DocumentConverter
 The DocumentConverter class is used to build structured data from a document. A document can either be a dictionary or a list of dictionaries. The DocumentConverter uses the `Schema` class to validate and build the objects from the document.
 ```Python
+import typing
 from endorser import DocumentConverter
 from endorser import Schema
 from endorser.validator import min_size
@@ -218,13 +230,13 @@ from endorser.validator import min_size
 class Address(Schema):
     zip_code: str
     house_number: int
-    addition: str = None
+    addition: typing.Optional[str]
 
 class User(Schema):
     email: str
     username: str
-    firstname: str = None
-    address: Address = None
+    firstname: typing.Optional[str]
+    address: typing.Optional[Address]
 
     @min_size(5)
     def validate_username(self, username):
@@ -281,5 +293,6 @@ For more examples see the `test.example` package.
 
 ### Limitations
 * Only works on Python 3.6+
-* Currently supported types are all primitives, list, dict and typing.List, and of course other Schema objects as well
+* Currently supported types are all primitives, list, dict and typing.List, typing.Optional and of course 
+other Schema objects as well
 * Classes which inherit from Schema are effectively final, you must not inherit from them

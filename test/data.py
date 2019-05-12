@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from endorser import Schema
 
@@ -11,11 +11,11 @@ class ParentSchema(Schema):
     str_prop: str
     int_prop: int
     list_prop: list
-    dict_prop: dict = None
+    dict_prop: Optional[dict]
     custom_obj: CustomSchema
     typed_list_prop: List[str]
     typed_list_prop_with_custom_obj: List[CustomSchema]
-    prop_with_default_value: str = 'def'
+    optional_with_default_value: Optional[str] = 'def'
 
     def validate_str_prop(self, value):
         return value

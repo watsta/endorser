@@ -1,3 +1,4 @@
+import typing
 import unittest
 
 from endorser import DocumentConverter
@@ -14,8 +15,8 @@ class Address(Schema):
 class User(Schema):
     email: str
     username: str
-    firstname: str = None  # assigning None as default makes it optional
-    address: Address = None  # nest Schema classes
+    firstname: typing.Optional[str]
+    address: typing.Optional[Address]  # nest Schema classes
 
     @min_size(5)
     def validate_username(self, username):

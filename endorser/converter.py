@@ -1,5 +1,6 @@
 from typing import get_type_hints, TypeVar, Type, Union, List
 
+from endorser.common import is_optional
 from endorser.schema import Schema
 
 S = TypeVar('S', dict, list)
@@ -58,7 +59,11 @@ def _transform_dict(document: dict, doc_type: Type[T],
     :param doc_type: the class to transform to
     :return: the transformed object
     """
-    hints = get_type_hints(doc_type)
+    if is_optional(doc_type):
+        hints = get_type_hints(doc_type.__args__[0])
+        doc_type = doc_type.__args__[0]
+    else:
+        hints = get_type_hints(doc_type)
     for k, v in document.items():
         if k not in hints:
             raise ValueError('%s is not type hinted' % k)

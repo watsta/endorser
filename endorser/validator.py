@@ -4,25 +4,6 @@ import uuid
 from endorser.error import construct_error, ErrorNames
 
 
-def not_none(validation_field):
-    """
-    Checks whether a value is None
-    """
-
-    @functools.wraps(validation_field)
-    def validator(self, value):
-        prop_name = _get_property_name_from(validation_field)
-        if value is None:
-            self.instance_errors.append(
-                construct_error(prop_name,
-                                'None value',
-                                self.__class__.__name__,
-                                name=ErrorNames.NONE_VALUE.value))
-        return validation_field(self, value)
-
-    return validator
-
-
 def not_empty(validation_field):
     """
     Checks whether a value is empty (which is either None or an empty value).

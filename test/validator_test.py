@@ -15,24 +15,12 @@ class ValidatorTest(unittest.TestCase):
     def validation_field(self, fun, val):
         return val
 
-    def test_not_none_validator(self):
-        validator.not_none(self.validation_field_mock)(self, 'not_null')
-        self.assertEqual([], self.instance_errors)
-
     def test_any_validator_with_validation_function_with_one_part(self):
-        validator.not_none(self.validation_field)(self, None)
+        validator.not_empty(self.validation_field)(self, None)
         self.assertEqual(1, len(self.instance_errors))
         self.assertEqual('ValidatorTest',
                          self.instance_errors[0].get('class'))
         self.assertEqual("field",
-                         self.instance_errors[0].get("field"))
-
-    def test_not_none_validator_with_null_val(self):
-        validator.not_none(self.validation_field_mock)(self, None)
-        self.assertEqual(1, len(self.instance_errors))
-        self.assertEqual('ValidatorTest',
-                         self.instance_errors[0].get('class'))
-        self.assertEqual(self.FIELD_NAME,
                          self.instance_errors[0].get("field"))
 
     def test_not_empty_validator_with_empty_values(self):
