@@ -29,7 +29,7 @@ def construct_error(field_name: str,
     if class_name:
         error['class'] = class_name
     if kwargs:
-        for k, v in kwargs:
+        for k, v in kwargs.items():
             error[k] = v
     return error
 
