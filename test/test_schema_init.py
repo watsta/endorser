@@ -60,6 +60,14 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(schema.doc_errors[0]['field'],
                          invalid_prop)
 
+    def test_representation(self):
+        invalid_prop = 'str_prop'
+        self.PROPERTIES[invalid_prop] = 123
+        schema = ParentSchema(**self.PROPERTIES)
+
+        representation = repr(schema)
+        self.assertTrue(isinstance(representation, str))
+
     def test_allow_unknown(self):
         unknown = 'unknown'
         unknown_val = 123
@@ -121,3 +129,11 @@ class TestSchema(unittest.TestCase):
         schema = SchemaToTest(prop=None)
 
         self.assertEqual(schema.prop, None)
+
+    def test_schema_with_wrong_default_value_for_type_hint_(self):
+
+        class SchemaToTest(Schema):
+            prop: typing.Optional[str] = 42
+
+        with self.assertRaises(AttributeError):
+            SchemaToTest()
